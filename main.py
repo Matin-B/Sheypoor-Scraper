@@ -57,3 +57,16 @@ def get_ads(last_page: int) -> list:
             ad['href'].split("-")[-1].split(".html")[0] for ad in soup.select('#serp .content a')
         )
         logging.info(f'Page {page} Scraped.')
+
+
+def get_number(ad_id: int) -> str:
+    response = requests.get(
+        f'https://www.sheypoor.com/api/web/listings/{ad_id}/number',
+        cookies=config.cookies,
+        headers=config.headers,
+    )
+    return response.json()['data']['mobileNumber']
+
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
