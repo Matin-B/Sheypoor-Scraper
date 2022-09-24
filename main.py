@@ -1,5 +1,10 @@
+import logging
+
 import requests
+from bs4 import BeautifulSoup as bs
+
 import config
+
 
 def send_verification_code(phone_number: int) -> str:
     """
@@ -40,3 +45,15 @@ def authenticate(verify_token: int, verification_code: int) -> dict:
         json=data
     )
     return response.json()
+
+
+def get_ads(last_page: int) -> list:
+    ads = []
+    for page in range(1, last_page):
+        url = f'https://www.sheypoor.com/اصفهان/املاک/رهن-اجاره-خانه-آپارتمان?p={page}'
+        response = requests.get(url, headers=config.headers)
+        soup = bs(response.text, 'html.parser')
+        ads.extend(
+            ad['href'].split("-")[-1].split(".html")[0] for ad in soup.select('#serp .content a')
+        )
+        logging.info(f'Page {page} Scraped.')
